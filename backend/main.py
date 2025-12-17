@@ -42,23 +42,34 @@ def load_model():
                 f"Model not found at {MODEL_PATH}. Please train the model first by running train_model.py"
             )
         try:
-            # Try loading with safe_mode=False for compatibility
+            # Try loading with safe_mode=False for TF 2.20.0 compatibility
             model = keras.models.load_model(MODEL_PATH, safe_mode=False)
         except Exception as e:
-            # If that fails, try with compile=False
+            # If that fails, try with compile=False and custom_objects
             try:
-                model = keras.models.load_model(MODEL_PATH, compile=False)
-                # Recompile the model
+                model = keras.models.load_model(
+                    MODEL_PATH, 
+                    compile=False,
+                    safe_mode=False
+                )
+                # Recompile the model for TF 2.20.0
                 model.compile(
-                    optimizer=tf.keras.optimizers.Adam(epsilon=0.01),
+                    optimizer=keras.optimizers.Adam(epsilon=0.01),
                     loss='binary_crossentropy',
                     metrics=['accuracy']
                 )
             except Exception as e2:
-                raise RuntimeError(
-                    f"Failed to load model. This may be due to TensorFlow version mismatch. "
-                    f"Model was trained with TensorFlow 2.15.0. Error: {str(e2)}"
-                )
+                # Last attempt: try loading weights only and rebuild architecture
+                try:
+                    from train_model import create_model
+                    model = create_model()
+                    # Try to load weights (this might fail if architecture changed)
+                    model.load_weights(MODEL_PATH.replace('.keras', '_weights.h5'))
+                except Exception as e3:
+                    raise RuntimeError(
+                        f"Failed to load model. Model may need to be retrained with TensorFlow 2.20.0. "
+                        f"Original error: {str(e)} | Second error: {str(e2)} | Third error: {str(e3)}"
+                    )
     return model
 
 def preprocess_image(image: Image.Image) -> np.ndarray:
