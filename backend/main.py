@@ -93,10 +93,11 @@ async def startup_event():
     try:
         load_model()
         print("✅ Model loaded successfully!")
-    except FileNotFoundError as e:
+    except (FileNotFoundError, RuntimeError) as e:
         print(f"⚠️  Warning: {e}")
         print("⚠️  Model will be loaded on first prediction request")
-        print("⚠️  To train the model, run: python train_model.py")
+        print("⚠️  To train the model, POST to /train endpoint")
+        print("⚠️  Note: Old model is incompatible with TensorFlow 2.20.0 - retraining required")
 
 @app.get("/")
 async def root():
