@@ -34,14 +34,31 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "brain_tumor_model.keras")
 
 def load_model():
-    """Load the trained model"""
+    """Load the trained model with compatibility handling"""
     global model
     if model is None:
         if not os.path.exists(MODEL_PATH):
             raise FileNotFoundError(
                 f"Model not found at {MODEL_PATH}. Please train the model first by running train_model.py"
             )
-        model = keras.models.load_model(MODEL_PATH)
+        try:
+            # Try loading with safe_mode=False for compatibility
+            model = keras.models.load_model(MODEL_PATH, safe_mode=False)
+        except Exception as e:
+            # If that fails, try with compile=False
+            try:
+                model = keras.models.load_model(MODEL_PATH, compile=False)
+                # Recompile the model
+                model.compile(
+                    optimizer=tf.keras.optimizers.Adam(epsilon=0.01),
+                    loss='binary_crossentropy',
+                    metrics=['accuracy']
+                )
+            except Exception as e2:
+                raise RuntimeError(
+                    f"Failed to load model. This may be due to TensorFlow version mismatch. "
+                    f"Model was trained with TensorFlow 2.15.0. Error: {str(e2)}"
+                )
     return model
 
 def preprocess_image(image: Image.Image) -> np.ndarray:
