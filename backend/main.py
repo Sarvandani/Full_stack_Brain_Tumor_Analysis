@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import numpy as np
@@ -7,6 +7,7 @@ from tensorflow import keras
 from PIL import Image
 import io
 import os
+import threading
 
 app = FastAPI(title="Brain Tumor Detection API")
 
@@ -107,27 +108,29 @@ async def health_check():
     except Exception as e:
         return {"status": "unhealthy", "model_loaded": False, "error": str(e)}
 
-@app.post("/train")
-async def train_model_endpoint():
-    """
-    Train the model (one-time use on Render)
-    This endpoint triggers model training and saves the model.
-    WARNING: This takes 10-15 minutes to complete!
-    """
+# Global flag to track training status
+training_in_progress = False
+training_status = {"status": "idle", "message": ""}
+
+def run_training():
+    """Run training in background thread"""
+    global training_in_progress, training_status, model
     import subprocess
     import sys
+    
+    training_in_progress = True
+    training_status = {"status": "running", "message": "Training started..."}
     
     try:
         # Check if model already exists
         if os.path.exists(MODEL_PATH):
-            return JSONResponse({
-                "status": "info",
-                "message": "Model already exists. Delete it first if you want to retrain.",
-                "model_path": MODEL_PATH
-            })
+            training_status = {"status": "info", "message": "Model already exists"}
+            training_in_progress = False
+            return
         
         # Run training script
         train_script = os.path.join(BASE_DIR, "train_model.py")
+        print("🚀 Starting model training...")
         result = subprocess.run(
             [sys.executable, train_script],
             cwd=BASE_DIR,
@@ -138,42 +141,66 @@ async def train_model_endpoint():
         
         if result.returncode == 0:
             # Reload model after training
-            global model
             model = None
             load_model()
-            
-            return JSONResponse({
-                "status": "success",
-                "message": "Model trained successfully!",
-                "output": result.stdout[-1000:],  # Last 1000 chars
-                "model_path": MODEL_PATH
-            })
+            training_status = {"status": "success", "message": "Model trained successfully!"}
+            print("✅ Training completed successfully!")
         else:
-            return JSONResponse(
-                status_code=500,
-                content={
-                    "status": "error",
-                    "message": "Training failed",
-                    "error": result.stderr[-1000:] if result.stderr else "Unknown error",
-                    "output": result.stdout[-1000:] if result.stdout else ""
-                }
-            )
+            error_msg = result.stderr[-500:] if result.stderr else "Unknown error"
+            training_status = {"status": "error", "message": f"Training failed: {error_msg}"}
+            print(f"❌ Training failed: {error_msg}")
     except subprocess.TimeoutExpired:
-        return JSONResponse(
-            status_code=500,
-            content={
-                "status": "error",
-                "message": "Training timed out after 30 minutes"
-            }
-        )
+        training_status = {"status": "error", "message": "Training timed out after 30 minutes"}
+        print("❌ Training timed out")
     except Exception as e:
-        return JSONResponse(
-            status_code=500,
-            content={
-                "status": "error",
-                "message": f"Error during training: {str(e)}"
-            }
-        )
+        training_status = {"status": "error", "message": f"Error during training: {str(e)}"}
+        print(f"❌ Error during training: {str(e)}")
+    finally:
+        training_in_progress = False
+
+@app.post("/train")
+async def train_model_endpoint(background_tasks: BackgroundTasks):
+    """
+    Train the model (one-time use on Render)
+    This endpoint triggers model training in the background.
+    WARNING: This takes 10-15 minutes to complete!
+    Check /train/status to monitor progress.
+    """
+    global training_in_progress
+    
+    # Check if training is already in progress
+    if training_in_progress:
+        return JSONResponse({
+            "status": "running",
+            "message": "Training is already in progress. Check /train/status for updates.",
+            "training_status": training_status
+        })
+    
+    # Check if model already exists
+    if os.path.exists(MODEL_PATH):
+        return JSONResponse({
+            "status": "info",
+            "message": "Model already exists. Delete it first if you want to retrain.",
+            "model_path": MODEL_PATH
+        })
+    
+    # Start training in background
+    training_thread = threading.Thread(target=run_training, daemon=True)
+    training_thread.start()
+    
+    return JSONResponse({
+        "status": "started",
+        "message": "Training started in background. This will take 10-15 minutes.",
+        "note": "Check /train/status endpoint to monitor progress, or watch Render logs."
+    })
+
+@app.get("/train/status")
+async def get_training_status():
+    """Get current training status"""
+    return JSONResponse({
+        "training_in_progress": training_in_progress,
+        "status": training_status
+    })
 
 @app.post("/predict")
 async def predict_tumor(file: UploadFile = File(...)):
