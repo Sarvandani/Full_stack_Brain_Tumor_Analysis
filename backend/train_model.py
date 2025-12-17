@@ -71,34 +71,34 @@ def load_data():
     return data, labels
 
 def create_model():
-    """Create an improved CNN model architecture with better accuracy"""
+    """Create an improved CNN model architecture with better accuracy (compatible with TF 2.20.0)"""
     model = keras.Sequential([
         # First Conv Block
-        layers.Conv2D(filters=32, kernel_size=(3,3), activation="relu", padding='same', input_shape=[128, 128, 3]),
+        layers.Conv2D(filters=32, kernel_size=(3,3), activation="relu", padding='same', input_shape=(128, 128, 3)),
         layers.BatchNormalization(),
         layers.Conv2D(filters=32, kernel_size=(3,3), activation="relu", padding='same'),
-        layers.MaxPool2D(pool_size=(2,2)),
+        layers.MaxPooling2D(pool_size=(2,2)),
         layers.Dropout(0.25),
         
         # Second Conv Block
         layers.Conv2D(filters=64, kernel_size=(3,3), activation="relu", padding='same'),
         layers.BatchNormalization(),
         layers.Conv2D(filters=64, kernel_size=(3,3), activation="relu", padding='same'),
-        layers.MaxPool2D(pool_size=(2,2)),
+        layers.MaxPooling2D(pool_size=(2,2)),
         layers.Dropout(0.25),
         
         # Third Conv Block
         layers.Conv2D(filters=128, kernel_size=(3,3), activation="relu", padding='same'),
         layers.BatchNormalization(),
         layers.Conv2D(filters=128, kernel_size=(3,3), activation="relu", padding='same'),
-        layers.MaxPool2D(pool_size=(2,2)),
+        layers.MaxPooling2D(pool_size=(2,2)),
         layers.Dropout(0.25),
         
         # Fourth Conv Block
         layers.Conv2D(filters=256, kernel_size=(3,3), activation="relu", padding='same'),
         layers.BatchNormalization(),
         layers.Conv2D(filters=256, kernel_size=(3,3), activation="relu", padding='same'),
-        layers.MaxPool2D(pool_size=(2,2)),
+        layers.MaxPooling2D(pool_size=(2,2)),
         layers.Dropout(0.25),
         
         # Dense Layers
@@ -122,7 +122,7 @@ def create_model():
     )
     
     model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=lr_schedule),
+        optimizer=keras.optimizers.Adam(learning_rate=lr_schedule),
         loss='binary_crossentropy',
         metrics=['accuracy', 'precision', 'recall']
     )
