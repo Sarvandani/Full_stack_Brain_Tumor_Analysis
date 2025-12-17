@@ -39,37 +39,32 @@ def load_model():
     if model is None:
         if not os.path.exists(MODEL_PATH):
             raise FileNotFoundError(
-                f"Model not found at {MODEL_PATH}. Please train the model first by running train_model.py"
+                f"Model not found at {MODEL_PATH}. Please train the model first by POSTing to /train endpoint"
             )
         try:
             # Try loading with safe_mode=False for TF 2.20.0 compatibility
             model = keras.models.load_model(MODEL_PATH, safe_mode=False)
+            print(f"✅ Model loaded from {MODEL_PATH}")
         except Exception as e:
-            # If that fails, try with compile=False and custom_objects
-            try:
-                model = keras.models.load_model(
-                    MODEL_PATH, 
-                    compile=False,
-                    safe_mode=False
+            # Model is incompatible - needs retraining
+            error_msg = str(e)
+            if "batch_input_shape" in error_msg or "could not be deserialized" in error_msg or "Unrecognized keyword" in error_msg:
+                # Old model incompatible - rename it and raise clear error
+                old_model_path = MODEL_PATH + ".old"
+                if os.path.exists(MODEL_PATH) and not os.path.exists(old_model_path):
+                    import shutil
+                    shutil.move(MODEL_PATH, old_model_path)
+                    print(f"⚠️  Moved incompatible model to {old_model_path}")
+                raise RuntimeError(
+                    f"Model is incompatible with TensorFlow 2.20.0. "
+                    f"The model was trained with an older version. Please retrain by POSTing to /train endpoint. "
+                    f"Error: {error_msg[:300]}"
                 )
-                # Recompile the model for TF 2.20.0
-                model.compile(
-                    optimizer=keras.optimizers.Adam(epsilon=0.01),
-                    loss='binary_crossentropy',
-                    metrics=['accuracy']
+            else:
+                raise RuntimeError(
+                    f"Failed to load model. Error: {error_msg[:300]}. "
+                    f"Please retrain by POSTing to /train endpoint."
                 )
-            except Exception as e2:
-                # Last attempt: try loading weights only and rebuild architecture
-                try:
-                    from train_model import create_model
-                    model = create_model()
-                    # Try to load weights (this might fail if architecture changed)
-                    model.load_weights(MODEL_PATH.replace('.keras', '_weights.h5'))
-                except Exception as e3:
-                    raise RuntimeError(
-                        f"Failed to load model. Model may need to be retrained with TensorFlow 2.20.0. "
-                        f"Original error: {str(e)} | Second error: {str(e2)} | Third error: {str(e3)}"
-                    )
     return model
 
 def preprocess_image(image: Image.Image) -> np.ndarray:
