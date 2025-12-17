@@ -1,0 +1,125 @@
+.result-container {
+  margin-top: 30px;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-container.tumor-detected {
+  background-color: #fee;
+  border: 2px solid #dc3545;
+}
+
+.result-container.no-tumor {
+  background-color: #d4edda;
+  border: 2px solid #28a745;
+}
+
+.result-icon {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.result-container.tumor-detected .result-icon {
+  color: #dc3545;
+}
+
+.result-container.no-tumor .result-icon {
+  color: #28a745;
+}
+
+.result-title {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #333;
+  font-weight: 700;
+}
+
+.confidence-bar-container {
+  margin: 25px 0;
+}
+
+.confidence-label {
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.confidence-bar {
+  width: 100%;
+  height: 30px;
+  background-color: #e0e0e0;
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+}
+
+.confidence-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  border-radius: 15px;
+  transition: width 0.5s ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  color: white;
+  font-weight: 600;
+}
+
+.result-details {
+  margin-top: 25px;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+}
+
+.result-message {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #555;
+  margin: 0;
+}
+
+.disclaimer {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.disclaimer p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .result-container {
+    padding: 20px;
+  }
+
+  .result-title {
+    font-size: 1.5rem;
+  }
+
+  .confidence-bar {
+    height: 25px;
+  }
+}
+

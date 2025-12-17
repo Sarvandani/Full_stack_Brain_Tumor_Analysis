@@ -1,0 +1,24 @@
+# Files to ignore when deploying to Render
+
+# Development files
+start_backend.sh
+start_frontend.sh
+
+# Documentation (optional - can be included)
+DEPLOYMENT.md
+
+# Training data (not needed if model is already trained)
+# Uncomment if you want to exclude training data
+# data/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+

@@ -1,0 +1,27 @@
+services:
+  # Backend API Service
+  - type: web
+    name: brain-tumor-detection-api
+    env: python
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && python main.py
+    envVars:
+      - key: PORT
+        value: 5001
+      - key: PYTHON_VERSION
+        value: 3.9.6
+    healthCheckPath: /health
+    plan: starter  # Change to 'standard' or 'pro' for production
+
+  # Frontend Service (if deploying separately)
+  - type: web
+    name: brain-tumor-detection-frontend
+    env: node
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npm run preview
+    envVars:
+      - key: VITE_API_URL
+        value: https://brain-tumor-detection-api.onrender.com
+    staticPublishPath: ./frontend/dist
+    plan: starter
+
