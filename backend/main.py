@@ -111,6 +111,74 @@ async def health_check():
     except Exception as e:
         return {"status": "unhealthy", "model_loaded": False, "error": str(e)}
 
+@app.post("/train")
+async def train_model_endpoint():
+    """
+    Train the model (one-time use on Render)
+    This endpoint triggers model training and saves the model.
+    WARNING: This takes 10-15 minutes to complete!
+    """
+    import subprocess
+    import sys
+    
+    try:
+        # Check if model already exists
+        if os.path.exists(MODEL_PATH):
+            return JSONResponse({
+                "status": "info",
+                "message": "Model already exists. Delete it first if you want to retrain.",
+                "model_path": MODEL_PATH
+            })
+        
+        # Run training script
+        train_script = os.path.join(BASE_DIR, "train_model.py")
+        result = subprocess.run(
+            [sys.executable, train_script],
+            cwd=BASE_DIR,
+            capture_output=True,
+            text=True,
+            timeout=1800  # 30 minutes timeout
+        )
+        
+        if result.returncode == 0:
+            # Reload model after training
+            global model
+            model = None
+            load_model()
+            
+            return JSONResponse({
+                "status": "success",
+                "message": "Model trained successfully!",
+                "output": result.stdout[-1000:],  # Last 1000 chars
+                "model_path": MODEL_PATH
+            })
+        else:
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "status": "error",
+                    "message": "Training failed",
+                    "error": result.stderr[-1000:] if result.stderr else "Unknown error",
+                    "output": result.stdout[-1000:] if result.stdout else ""
+                }
+            )
+    except subprocess.TimeoutExpired:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "status": "error",
+                "message": "Training timed out after 30 minutes"
+            }
+        )
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "status": "error",
+                "message": f"Error during training: {str(e)}"
+            }
+        )
+
 @app.post("/predict")
 async def predict_tumor(file: UploadFile = File(...)):
     """
