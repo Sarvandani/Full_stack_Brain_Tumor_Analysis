@@ -8,8 +8,8 @@ services:
     envVars:
       - key: PORT
         value: 5001
-      - key: PYTHON_VERSION
-        value: 3.9.18
+      - key: ALLOWED_ORIGINS
+        value: https://brain-tumor-detection-frontend.onrender.com
     healthCheckPath: /health
     plan: starter  # Change to 'standard' or 'pro' for production
 
