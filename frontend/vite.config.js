@@ -16,6 +16,7 @@ export default defineConfig({
         manualChunks: undefined
       }
     }
-  }
+  },
+  publicDir: 'public'  // Ensure public folder contents are copied to dist
 })
 
