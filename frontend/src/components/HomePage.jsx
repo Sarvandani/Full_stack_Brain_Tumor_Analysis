@@ -44,6 +44,32 @@ function HomePage() {
           </p>
         </section>
 
+        <section className="how-it-works-section">
+          <h2>How It Works</h2>
+          <div className="process-steps">
+            <div className="process-step">
+              <div className="step-number">1</div>
+              <h3>Upload Image</h3>
+              <p>Upload a brain MRI image through our intuitive interface. The system accepts standard image formats (JPG, PNG).</p>
+            </div>
+            <div className="process-step">
+              <div className="step-number">2</div>
+              <h3>Image Preprocessing</h3>
+              <p>The uploaded image is automatically resized to 128x128 pixels and normalized to ensure optimal model performance.</p>
+            </div>
+            <div className="process-step">
+              <div className="step-number">3</div>
+              <h3>AI Analysis</h3>
+              <p>Our trained CNN model analyzes the image through multiple convolutional layers, extracting features and patterns.</p>
+            </div>
+            <div className="process-step">
+              <div className="step-number">4</div>
+              <h3>Results & Confidence</h3>
+              <p>Get instant results with confidence scores, indicating the likelihood of tumor presence in the analyzed image.</p>
+            </div>
+          </div>
+        </section>
+
         <section className="features-section">
           <h2>Key Features</h2>
           <div className="features-grid">
