@@ -71,7 +71,7 @@ def load_data():
     return data, labels
 
 def create_model():
-    """Create an improved CNN model architecture with better accuracy (compatible with TF 2.15.0 and 2.20.0)"""
+    """Create an optimized CNN model with good accuracy and smaller size (compatible with TF 2.15.0 and 2.20.0)"""
     model = keras.Sequential([
         # First Conv Block
         layers.Conv2D(filters=32, kernel_size=(3,3), activation="relu", padding='same', input_shape=(128, 128, 3)),
@@ -92,22 +92,22 @@ def create_model():
         layers.BatchNormalization(),
         layers.Conv2D(filters=128, kernel_size=(3,3), activation="relu", padding='same'),
         layers.MaxPooling2D(pool_size=(2,2)),
-        layers.Dropout(0.25),
+        layers.Dropout(0.3),
         
-        # Fourth Conv Block
-        layers.Conv2D(filters=256, kernel_size=(3,3), activation="relu", padding='same'),
+        # Fourth Conv Block - Reduced filters for smaller size
+        layers.Conv2D(filters=128, kernel_size=(3,3), activation="relu", padding='same'),
         layers.BatchNormalization(),
-        layers.Conv2D(filters=256, kernel_size=(3,3), activation="relu", padding='same'),
         layers.MaxPooling2D(pool_size=(2,2)),
-        layers.Dropout(0.25),
+        layers.Dropout(0.3),
         
-        # Dense Layers
-        layers.Flatten(),
-        layers.Dense(units=512, activation="relu"),
+        # Use GlobalAveragePooling instead of Flatten to reduce parameters
+        layers.GlobalAveragePooling2D(),
+        
+        # Dense Layers - Reduced for smaller model size
+        layers.Dense(units=128, activation="relu"),
         layers.BatchNormalization(),
         layers.Dropout(0.5),
-        layers.Dense(units=256, activation="relu"),
-        layers.BatchNormalization(),
+        layers.Dense(units=64, activation="relu"),
         layers.Dropout(0.5),
         layers.Dense(units=1, activation="sigmoid"),
     ])
