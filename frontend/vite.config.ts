@@ -1,11 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { copyFileSync } from 'fs'
+import { copyFileSync, existsSync } from 'fs'
 import { join } from 'path'
 
 // Plugin to copy netlify.toml and _headers to dist after build
 const copyNetlifyConfig = () => {
-  const fs = require('fs')
   return {
     name: 'copy-netlify-config',
     closeBundle() {
@@ -18,7 +17,7 @@ const copyNetlifyConfig = () => {
       
       for (const src of sources) {
         try {
-          if (fs.existsSync(src)) {
+          if (existsSync(src)) {
             copyFileSync(src, dest)
             console.log(`✅ Copied netlify.toml to dist/ from ${src}`)
             return
