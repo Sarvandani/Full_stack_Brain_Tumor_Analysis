@@ -13,25 +13,13 @@ services:
     healthCheckPath: /health
     plan: starter
 
-  # Frontend Service - Static Site (Single HTML File)
+  # Frontend Service - React SPA
   - type: static
     name: brain-tumor-detection-frontend
-    buildCommand: echo "No build needed - using single HTML file"
-    staticPublishPath: ./frontend
-    headers:
-      - path: /*
-        name: Content-Type
-        value: text/html
-      - path: /*.js
-        name: Content-Type
-        value: application/javascript; charset=utf-8
-      - path: /*.css
-        name: Content-Type
-        value: text/css
-      - path: /*.jpg
-        name: Content-Type
-        value: image/jpeg
-      - path: /*.png
-        name: Content-Type
-        value: image/png
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
 
