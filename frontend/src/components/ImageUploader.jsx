@@ -18,10 +18,12 @@ function ImageUploader({ onResult, onError, onReset }) {
     if (file) {
       if (!file.type.startsWith('image/')) {
         alert('Please select an image file')
-        // Reset input to allow selecting again
-        if (fileInputRef.current) {
-          fileInputRef.current.value = ''
-        }
+        // Reset input after a delay to allow selecting again
+        setTimeout(() => {
+          if (fileInputRef.current) {
+            fileInputRef.current.value = ''
+          }
+        }, 100)
         return
       }
 
@@ -30,6 +32,12 @@ function ImageUploader({ onResult, onError, onReset }) {
       const reader = new FileReader()
       reader.onloadend = () => {
         setPreviewUrl(reader.result)
+        // Reset input after successful load to allow selecting same file again
+        setTimeout(() => {
+          if (fileInputRef.current) {
+            fileInputRef.current.value = ''
+          }
+        }, 100)
       }
       reader.onerror = () => {
         onError('Error reading image file')
@@ -38,11 +46,6 @@ function ImageUploader({ onResult, onError, onReset }) {
         }
       }
       reader.readAsDataURL(file)
-    } else {
-      // No file selected, reset
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
-      }
     }
   }
 
@@ -121,7 +124,8 @@ function ImageUploader({ onResult, onError, onReset }) {
         className={`upload-area ${previewUrl ? 'has-preview' : ''}`}
         onClick={(e) => {
           // Only trigger file input if clicking on placeholder, not preview
-          if (!previewUrl) {
+          if (!previewUrl && !e.target.closest('.file-input')) {
+            e.preventDefault()
             e.stopPropagation()
             fileInputRef.current?.click()
           }
@@ -144,10 +148,6 @@ function ImageUploader({ onResult, onError, onReset }) {
               accept="image/*"
               className="file-input"
               onChange={handleFileSelect}
-              onClick={(e) => {
-                // Reset value to allow selecting same file again
-                e.target.value = ''
-              }}
             />
           </div>
         ) : (
