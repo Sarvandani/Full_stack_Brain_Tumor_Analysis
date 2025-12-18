@@ -1,9 +1,28 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { copyFileSync } from 'fs'
+import { join } from 'path'
+
+// Plugin to copy netlify.toml to dist after build
+const copyNetlifyConfig = () => {
+  return {
+    name: 'copy-netlify-config',
+    closeBundle() {
+      const src = join(__dirname, 'public', 'netlify.toml')
+      const dest = join(__dirname, 'dist', 'netlify.toml')
+      try {
+        copyFileSync(src, dest)
+        console.log('✅ Copied netlify.toml to dist/')
+      } catch (err) {
+        console.warn('⚠️ Could not copy netlify.toml:', err)
+      }
+    }
+  }
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), copyNetlifyConfig()],
   server: {
     port: 4001,
     proxy: {
