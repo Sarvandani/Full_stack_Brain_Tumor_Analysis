@@ -5,9 +5,7 @@ import './ImageUploader.css'
 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
 const API_URL = isLocalhost 
   ? 'http://localhost:5001'
-  : (window.location.hostname.includes('netlify') || window.location.hostname.includes('render')
-      ? 'https://full-stack-brain-tumor-analysis.onrender.com'
-      : window.location.origin)
+  : (import.meta.env.VITE_API_URL || 'https://full-stack-brain-tumor-analysis.onrender.com')
 
 function ImageUploader({ onResult, onError, onReset }) {
   const [selectedFile, setSelectedFile] = useState(null)
