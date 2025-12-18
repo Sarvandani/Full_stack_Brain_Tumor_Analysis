@@ -18,29 +18,24 @@ function ImageUploader({ onResult, onError, onReset }) {
     if (file) {
       if (!file.type.startsWith('image/')) {
         alert('Please select an image file')
-        // Reset input after a delay to allow selecting again
-        setTimeout(() => {
-          if (fileInputRef.current) {
-            fileInputRef.current.value = ''
-          }
-        }, 100)
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ''
+        }
         return
       }
 
+      // Set file immediately
       setSelectedFile(file)
 
+      // Read file for preview
       const reader = new FileReader()
       reader.onloadend = () => {
         setPreviewUrl(reader.result)
-        // Reset input after successful load to allow selecting same file again
-        setTimeout(() => {
-          if (fileInputRef.current) {
-            fileInputRef.current.value = ''
-          }
-        }, 100)
       }
       reader.onerror = () => {
         onError('Error reading image file')
+        setSelectedFile(null)
+        setPreviewUrl(null)
         if (fileInputRef.current) {
           fileInputRef.current.value = ''
         }
@@ -122,14 +117,6 @@ function ImageUploader({ onResult, onError, onReset }) {
     <div className="uploader-container">
       <div 
         className={`upload-area ${previewUrl ? 'has-preview' : ''}`}
-        onClick={(e) => {
-          // Only trigger file input if clicking on placeholder, not preview
-          if (!previewUrl && !e.target.closest('.file-input')) {
-            e.preventDefault()
-            e.stopPropagation()
-            fileInputRef.current?.click()
-          }
-        }}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
