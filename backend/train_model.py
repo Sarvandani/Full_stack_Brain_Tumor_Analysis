@@ -214,7 +214,9 @@ def train():
     
     # Evaluate model
     print("\nEvaluating model...")
-    test_loss, test_accuracy = model.evaluate(x_test, y_test, verbose=0)
+    eval_results = model.evaluate(x_test, y_test, verbose=0)
+    test_loss = eval_results[0]
+    test_accuracy = eval_results[1]
     print(f"Test Loss: {test_loss:.4f}")
     print(f"Test Accuracy: {test_accuracy:.4f}")
     
