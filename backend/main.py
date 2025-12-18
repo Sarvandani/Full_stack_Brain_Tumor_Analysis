@@ -32,7 +32,7 @@ app = FastAPI(title="Brain Tumor Detection API", lifespan=lifespan)
 import os
 ALLOWED_ORIGINS = os.getenv(
     "ALLOWED_ORIGINS",
-    "http://localhost:4001,http://localhost:4000,http://localhost:3000,http://localhost:5173,http://127.0.0.1:4001"
+    "http://localhost:4001,http://localhost:4000,http://localhost:3000,http://localhost:5173,http://127.0.0.1:4001,https://full-stack-brain-tumor-analysis-1q4r.onrender.com"
 ).split(",")
 
 app.add_middleware(
