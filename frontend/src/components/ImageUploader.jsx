@@ -15,33 +15,27 @@ function ImageUploader({ onResult, onError, onReset }) {
 
   const handleFileSelect = (event) => {
     const file = event.target.files?.[0]
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        alert('Please select an image file')
-        if (fileInputRef.current) {
-          fileInputRef.current.value = ''
-        }
-        return
-      }
+    if (!file) return
 
-      // Set file immediately
-      setSelectedFile(file)
-
-      // Read file for preview
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result)
-      }
-      reader.onerror = () => {
-        onError('Error reading image file')
-        setSelectedFile(null)
-        setPreviewUrl(null)
-        if (fileInputRef.current) {
-          fileInputRef.current.value = ''
-        }
-      }
-      reader.readAsDataURL(file)
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file')
+      return
     }
+
+    // Set file immediately
+    setSelectedFile(file)
+
+    // Read file for preview
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      setPreviewUrl(e.target.result)
+    }
+    reader.onerror = () => {
+      onError('Error reading image file')
+      setSelectedFile(null)
+      setPreviewUrl(null)
+    }
+    reader.readAsDataURL(file)
   }
 
   const handleReset = () => {
@@ -82,27 +76,16 @@ function ImageUploader({ onResult, onError, onReset }) {
     }
   }
 
-  const handleDragOver = (e) => {
-    e.preventDefault()
-  }
-
-  const handleDragLeave = () => {
-    // Optional: Add visual feedback
-  }
-
   const handleDrop = (e) => {
     e.preventDefault()
     e.stopPropagation()
+    
     const file = e.dataTransfer.files[0]
     if (file && file.type.startsWith('image/')) {
       setSelectedFile(file)
-      // Reset file input to allow selecting again
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
-      }
       const reader = new FileReader()
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result)
+      reader.onload = (e) => {
+        setPreviewUrl(e.target.result)
       }
       reader.onerror = () => {
         onError('Error reading image file')
@@ -113,44 +96,42 @@ function ImageUploader({ onResult, onError, onReset }) {
     }
   }
 
+  const handleDragOver = (e) => {
+    e.preventDefault()
+  }
+
   return (
     <div className="uploader-container">
-      <div 
-        className={`upload-area ${previewUrl ? 'has-preview' : ''}`}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
-        {!previewUrl ? (
-          <>
-            <div className="upload-placeholder">
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="17 8 12 3 7 8" />
-                <line x1="12" y1="3" x2="12" y2="15" />
-              </svg>
-              <p>Drag and drop an image here, or click to select</p>
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="file-input"
-              onChange={handleFileSelect}
-            />
-          </>
-        ) : (
-          <div className="preview-container">
-            <img src={previewUrl} alt="Preview" className="preview-image" />
-            <button className="remove-button" onClick={(e) => {
-              e.stopPropagation()
-              handleReset()
-            }}>
-              ×
-            </button>
+      {!previewUrl ? (
+        <label 
+          className="upload-area"
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+        >
+          <div className="upload-content">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            <p>Drag and drop an image here, or click to select</p>
           </div>
-        )}
-      </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            style={{ display: 'none' }}
+          />
+        </label>
+      ) : (
+        <div className="preview-area">
+          <img src={previewUrl} alt="Preview" className="preview-image" />
+          <button className="remove-button" onClick={handleReset}>
+            ×
+          </button>
+        </div>
+      )}
 
       <div className="button-group">
         <button
@@ -174,4 +155,3 @@ function ImageUploader({ onResult, onError, onReset }) {
 }
 
 export default ImageUploader
-
