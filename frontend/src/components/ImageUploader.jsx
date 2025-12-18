@@ -155,13 +155,9 @@ function ImageUploader({ onResult, onError, onReset }) {
       reader.readAsDataURL(file)
       
       setSelectedFile(file)
-
-      // Automatically analyze (this will check model and predict)
-      await checkModelAndPredict()
+      // Don't automatically analyze - wait for user to click "Analyze Tumor" button
     } catch (err) {
       onError(`Error: ${err instanceof Error ? err.message : 'An error occurred'}`)
-      setModelLoading(false)
-      setIsAnalyzing(false)
     }
   }
 
