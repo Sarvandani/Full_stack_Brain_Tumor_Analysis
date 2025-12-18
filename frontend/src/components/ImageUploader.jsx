@@ -90,6 +90,52 @@ function ImageUploader({ onResult, onError, onReset }) {
     }
   }
 
+  const handleExampleSelect = async (exampleType) => {
+    setIsAnalyzing(true)
+    onError(null)
+
+    try {
+      // Fetch the example image
+      const imagePath = exampleType === 'tumor' 
+        ? '/images/example_tumor.jpg'
+        : '/images/example_normal.jpg'
+      
+      const response = await fetch(imagePath)
+      const blob = await response.blob()
+      const file = new File([blob], `${exampleType}_example.jpg`, { type: 'image/jpeg' })
+      
+      // Set preview
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result)
+      }
+      reader.readAsDataURL(file)
+      
+      setSelectedFile(file)
+
+      // Automatically analyze
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const predictResponse = await fetch(`${API_URL}/predict`, {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!predictResponse.ok) {
+        const errorData = await predictResponse.json()
+        throw new Error(errorData.detail || 'Failed to predict')
+      }
+
+      const data = await predictResponse.json()
+      onResult(data)
+    } catch (err) {
+      onError(`Error: ${err instanceof Error ? err.message : 'An error occurred'}`)
+    } finally {
+      setIsAnalyzing(false)
+    }
+  }
+
   return (
     <div className="uploader-container">
       <div 
@@ -146,6 +192,32 @@ function ImageUploader({ onResult, onError, onReset }) {
           </button>
         )}
       </div>
+
+      {!previewUrl && (
+        <div className="example-images-section">
+          <p className="example-label">Or try with example images:</p>
+          <div className="example-images">
+            <button
+              className="example-image-btn"
+              onClick={() => handleExampleSelect('tumor')}
+              disabled={isAnalyzing}
+              title="Example: Brain with Tumor (Y169)"
+            >
+              <img src="/images/example_tumor.jpg" alt="Example: Tumor" />
+              <span>Example: Tumor</span>
+            </button>
+            <button
+              className="example-image-btn"
+              onClick={() => handleExampleSelect('normal')}
+              disabled={isAnalyzing}
+              title="Example: Normal Brain (N22)"
+            >
+              <img src="/images/example_normal.jpg" alt="Example: Normal" />
+              <span>Example: Normal</span>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
