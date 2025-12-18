@@ -1,171 +1,148 @@
-# Brain Tumor Detection - Full Stack Application
+# 🧠 SARVANDANI - Brain Tumor Analysis System
 
-A full-stack deep learning application for detecting brain tumors in MRI images. Built with React + TypeScript frontend and FastAPI backend.
+A full-stack application for AI-powered brain tumor detection from MRI images using deep learning.
 
-## Features
+## 🌐 Live Application
 
-- 🧠 Upload brain MRI images for tumor detection
-- 🤖 AI-powered classification using deep learning CNN
-- 📊 Confidence score display
-- 🎨 Modern, responsive UI
-- ⚡ Fast API with FastAPI
-- 🔒 Type-safe with TypeScript
-- ☁️ Ready for deployment on Render
+**🔗 Backend API**: [https://full-stack-brain-tumor-analysis.onrender.com](https://full-stack-brain-tumor-analysis.onrender.com)  
+**🔗 Frontend**: Deployed on Render (Static Site)
 
-## Project Structure
+## 🚀 Tech Stack
 
-```
-.
-├── backend/              # FastAPI backend
-│   ├── main.py         # API server
-│   ├── train_model.py  # Model training script
-│   ├── requirements.txt
-│   └── models/         # Saved models (created after training)
-├── frontend/           # React + TypeScript frontend
-│   ├── src/
-│   │   ├── components/
-│   │   ├── App.tsx
-│   │   └── main.tsx
-│   ├── package.json
-│   └── vite.config.ts
-├── data/               # Training data
-│   └── brain_tumor_dataset/
-│       ├── yes/        # Images with tumors
-│       └── no/         # Images without tumors
-├── render.yaml         # Render deployment configuration
-└── DEPLOYMENT.md       # Deployment guide
-```
+### Frontend
+- **Single HTML File** - No build process, no MIME type issues
+- **Vanilla JavaScript** - No framework dependencies
+- **Modern CSS** - Responsive design
 
-## Quick Start
+### Backend
+- **FastAPI** - Modern Python web framework
+- **TensorFlow 2.15** - Deep learning framework
+- **Keras** - High-level neural network API
+- **CNN Architecture** - Convolutional Neural Network for image classification
+
+### AI/ML
+- **Deep Learning Model** - Trained CNN for tumor detection
+- **Data Augmentation** - Improved model accuracy
+- **Confidence Scores** - Detailed prediction metrics
+
+## 📋 Features
+
+- 🧠 **AI-Powered Analysis** - Deep learning model for tumor detection
+- ⚡ **Fast Processing** - Get results in seconds
+- 📊 **Confidence Scores** - Detailed prediction metrics
+- 🖼️ **Image Upload** - Drag and drop or click to upload
+- 📱 **Responsive Design** - Works on all devices
+
+## 🛠️ Installation
 
 ### Prerequisites
 
-- Python 3.8+
-- Node.js 16+
-- npm or yarn
+- Python 3.9 or higher
+- pip (Python package manager)
 
-### Local Development
+### Setup
 
-#### 1. Train the Model (First Time Only)
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Sarvandani/Full_stack_Brain_Tumor_Analysis.git
+   cd Full_stack_Brain_Tumor_Analysis
+   ```
 
-```bash
-cd backend
-pip install -r requirements.txt
-python train_model.py
-```
+2. **Install backend dependencies**
+   ```bash
+   cd backend
+   pip install -r requirements.txt
+   ```
 
-This will:
-- Load images from `data/brain_tumor_dataset/`
-- Train a CNN model
-- Save the model to `backend/models/brain_tumor_model.keras`
+3. **Train the model** (if not already trained)
+   ```bash
+   python train_model.py
+   ```
 
-**Note:** Training takes 5-15 minutes depending on your hardware.
+## 🚀 Running Locally
 
-#### 2. Start Backend
+### Start Backend
 
 ```bash
 cd backend
 python main.py
 ```
 
-The API will be available at `http://localhost:5001`
+The backend will start on `http://localhost:5001`
 
-#### 3. Start Frontend
+### Start Frontend
+
+Simply open `frontend/index.html` in your browser, or use a local server:
 
 ```bash
 cd frontend
-npm install
-npm run dev
+python -m http.server 4001
 ```
 
-The frontend will be available at `http://localhost:4001`
+Then open `http://localhost:4001` in your browser.
 
-## Usage
+## 📦 Project Structure
 
-1. Make sure both backend and frontend servers are running
-2. Open `http://localhost:4001` in your browser
-3. Upload a brain MRI image by:
-   - Clicking the upload area and selecting a file, or
-   - Dragging and dropping an image
-4. Click "Detect Tumor" to analyze the image
-5. View the results showing whether a tumor was detected and the confidence score
-
-## API Endpoints
-
-### `GET /`
-Health check endpoint
-
-### `GET /health`
-Check API and model status
-
-### `POST /predict`
-Upload an image for tumor detection
-
-**Request:**
-- Content-Type: `multipart/form-data`
-- Body: `file` (image file)
-
-**Response:**
-```json
-{
-  "has_tumor": true,
-  "confidence": 85.5,
-  "prediction_value": 0.855,
-  "message": "Tumor detected"
-}
+```
+Full_stack_Brain_Tumor_Analysis/
+├── backend/
+│   ├── main.py              # FastAPI application
+│   ├── train_model.py       # Model training script
+│   ├── requirements.txt     # Python dependencies
+│   └── models/              # Trained model (generated)
+├── frontend/
+│   ├── index.html           # Single HTML file (all-in-one)
+│   └── images/              # MRI sample images
+├── data/
+│   └── brain_tumor_dataset/ # Training dataset
+├── render.yaml              # Render deployment config
+└── README.md               # This file
 ```
 
-## Model Architecture
+## 🌐 Deployment on Render
 
-The CNN model consists of:
-- 4 Convolutional layers with MaxPooling
-- Dropout layer (0.25)
-- Dense layers (256 units, then 1 output)
-- Sigmoid activation for binary classification
-- Input size: 128x128x3
+### Backend Deployment
 
-## Deployment
+1. **Connect GitHub repository** to Render
+2. **Create new Web Service**
+3. **Configure**:
+   - **Build Command**: `cd backend && pip install -r requirements.txt`
+   - **Start Command**: `cd backend && python main.py`
+   - **Environment Variables**:
+     - `PORT`: `5001`
+     - `ALLOWED_ORIGINS`: Your frontend URL
 
-This project is ready for deployment on Render. See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
+### Frontend Deployment
 
-### Quick Deploy to Render
+1. **Create new Static Site** on Render
+2. **Configure**:
+   - **Build Command**: `echo "No build needed"`
+   - **Publish Directory**: `frontend`
+3. **Update backend CORS** with frontend URL
 
-1. Push code to GitHub
-2. Connect repository to Render
-3. Use `render.yaml` for automatic service setup
-4. Set environment variables as needed
+Or use `render.yaml` for automatic deployment.
 
-## Development
+## 📝 API Endpoints
 
-### Backend Development
-- API documentation available at `http://localhost:5001/docs` (Swagger UI)
-- Alternative docs at `http://localhost:5001/redoc`
+- `GET /health` - Health check
+- `POST /predict` - Analyze brain MRI image for tumor detection
+- `POST /train` - Train the model (background task)
+- `GET /train/status` - Check training status
 
-### Frontend Development
-- Built with Vite for fast development
-- TypeScript for type safety
-- React 18 with hooks
+## ⚙️ Configuration
 
-## Environment Variables
+- **Backend Port**: 5001 (configurable via `PORT` env var)
+- **Frontend Port**: 4001 (local development)
+- **Model Path**: `backend/models/brain_tumor_model.keras`
 
-### Backend
-- `PORT`: Server port (default: 5001)
-- `ALLOWED_ORIGINS`: Comma-separated list of allowed CORS origins
+## ⚠️ Important Disclaimer
 
-### Frontend
-- `VITE_API_URL`: Backend API URL (default: http://localhost:5001)
+This tool is for **educational and research purposes only**. It should **not be used as a substitute** for professional medical diagnosis, treatment, or advice. Always consult with qualified medical professionals for medical decisions and diagnosis.
 
-## Notes
+## 👨‍💻 Author
 
-- The model needs to be trained before the API can make predictions
-- Training may take some time depending on your hardware
-- The model is saved in Keras format (`.keras`)
-- Make sure the data directories contain valid image files
+**SARVANDANI**
 
-## Disclaimer
+---
 
-⚠️ **This tool is for educational purposes only and should not be used as a substitute for professional medical diagnosis. Always consult with qualified medical professionals for medical decisions.**
-
-## License
-
-See LICENCE.txt for details.
+*For questions, issues, or contributions, please open an issue on GitHub.*
