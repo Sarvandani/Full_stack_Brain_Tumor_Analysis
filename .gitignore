@@ -1,48 +1,43 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-ENV/
-.venv
-*.pkl
 
-# Model files (excluded from git - too large, like NLP project)
-# *.keras - Temporarily disabled to allow model upload
-*.h5
-*.pb
-*.pth
-*.pt
-*.bin
-# models/ - Temporarily disabled
+!models/*.keras
 !models/.gitkeep
 !models/training_history.json
-!models/*.keras
-
-# Node
-node_modules/
-dist/
-dist-ssr/
-*.local
-
+# *.keras - Temporarily disabled to allow model upload
+# Build artifacts
 # IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
 # Logs
+# Model files (excluded from git - too large, like NLP project)
+# Node
+# OS
+# Python
+# models/ - Temporarily disabled
+*$py.class
+*.bin
+*.egg-info/
+*.h5
+*.local
 *.log
 *.log.*
-
-# Build artifacts
+*.pb
+*.pkl
+*.pt
+*.pth
+*.py[cod]
+*.so
+*.swo
+*.swp
+.DS_Store
+.Python
+.idea/
+.venv
+.vscode/
+ENV/
+Thumbs.db
+__pycache__/
 build/
-*.egg-info/
-
+dist-ssr/
+dist/
+env/
+frontend/dist/
+node_modules/
+venv/
