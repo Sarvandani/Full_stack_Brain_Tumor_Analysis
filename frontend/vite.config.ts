@@ -15,7 +15,7 @@ export default defineConfig({
     }
   },
   build: {
-    // Ensure proper file extensions
+    // Ensure proper file extensions and copy _headers file
     rollupOptions: {
       output: {
         entryFileNames: 'assets/[name]-[hash].js',
@@ -32,7 +32,9 @@ export default defineConfig({
           return `assets/[name]-[hash][extname]`
         }
       }
-    }
+    },
+    // Copy _headers file to dist root for Netlify
+    copyPublicDir: true
   }
 })
 
