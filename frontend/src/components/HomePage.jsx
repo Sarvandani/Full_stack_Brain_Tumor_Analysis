@@ -17,6 +17,24 @@ function HomePage() {
           <p className="subtitle">AI-Powered Medical Image Analysis</p>
         </header>
 
+        <section className="cta-section">
+          <div className="cta-content">
+            <div className="cta-image-left">
+              <img src="/images/mri_tumor.jpg" alt="MRI with Tumor" />
+            </div>
+            <div className="cta-text">
+              <h2>Ready to Analyze?</h2>
+              <p>Upload a brain MRI image to get started with AI-powered tumor analysis</p>
+              <button className="cta-button" onClick={handleStartAnalysis}>
+                Start Analysis
+              </button>
+            </div>
+            <div className="cta-image-right">
+              <img src="/images/mri_normal.jpg" alt="Normal MRI" />
+            </div>
+          </div>
+        </section>
+
         <section className="about-section">
           <h2>About This Project</h2>
           <p>
@@ -80,24 +98,6 @@ function HomePage() {
                 <li>CNN Architecture</li>
                 <li>Data Augmentation</li>
               </ul>
-            </div>
-          </div>
-        </section>
-
-        <section className="cta-section">
-          <div className="cta-content">
-            <div className="cta-image-left">
-              <img src="/images/mri_tumor.jpg" alt="MRI with Tumor" />
-            </div>
-            <div className="cta-text">
-              <h2>Ready to Analyze?</h2>
-              <p>Upload a brain MRI image to get started with AI-powered tumor analysis</p>
-              <button className="cta-button" onClick={handleStartAnalysis}>
-                Start Analysis
-              </button>
-            </div>
-            <div className="cta-image-right">
-              <img src="/images/mri_normal.jpg" alt="Normal MRI" />
             </div>
           </div>
         </section>
