@@ -3,19 +3,30 @@ import react from '@vitejs/plugin-react'
 import { copyFileSync } from 'fs'
 import { join } from 'path'
 
-// Plugin to copy netlify.toml to dist after build
+// Plugin to copy netlify.toml and _headers to dist after build
 const copyNetlifyConfig = () => {
   return {
     name: 'copy-netlify-config',
     closeBundle() {
-      const src = join(__dirname, 'public', 'netlify.toml')
+      // Copy netlify.toml from multiple possible locations
+      const sources = [
+        join(__dirname, 'netlify.toml'),
+        join(__dirname, 'public', 'netlify.toml')
+      ]
       const dest = join(__dirname, 'dist', 'netlify.toml')
-      try {
-        copyFileSync(src, dest)
-        console.log('✅ Copied netlify.toml to dist/')
-      } catch (err) {
-        console.warn('⚠️ Could not copy netlify.toml:', err)
+      
+      for (const src of sources) {
+        try {
+          if (require('fs').existsSync(src)) {
+            copyFileSync(src, dest)
+            console.log(`✅ Copied netlify.toml to dist/ from ${src}`)
+            return
+          }
+        } catch (err) {
+          // Try next source
+        }
       }
+      console.warn('⚠️ Could not find netlify.toml to copy')
     }
   }
 }
