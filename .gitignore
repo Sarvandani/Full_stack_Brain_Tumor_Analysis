@@ -19,6 +19,8 @@ ENV/
 *.bin
 models/
 !models/.gitkeep
+!models/training_history.json
+!models/brain_tumor_model.keras.old
 
 # Node
 node_modules/
