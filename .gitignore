@@ -11,16 +11,16 @@ ENV/
 *.pkl
 
 # Model files (excluded from git - too large, like NLP project)
-*.keras
+# *.keras - Temporarily disabled to allow model upload
 *.h5
 *.pb
 *.pth
 *.pt
 *.bin
-models/
+# models/ - Temporarily disabled
 !models/.gitkeep
 !models/training_history.json
-!models/brain_tumor_model.keras.old
+!models/*.keras
 
 # Node
 node_modules/
