@@ -101,6 +101,22 @@ function HomePage() {
             </div>
           </div>
         </section>
+
+        <section className="disclaimer-section">
+          <div className="disclaimer-content">
+            <h3>⚠️ Important Disclaimer</h3>
+            <p>
+              This tool is for <strong>educational and research purposes only</strong>. 
+              It should <strong>not be used as a substitute</strong> for professional medical 
+              diagnosis, treatment, or advice. Always consult with qualified medical professionals 
+              for medical decisions and diagnosis.
+            </p>
+            <p>
+              The AI model provides predictions based on image analysis, but these results are 
+              not a replacement for professional medical evaluation by licensed healthcare providers.
+            </p>
+          </div>
+        </section>
       </div>
     </div>
   )

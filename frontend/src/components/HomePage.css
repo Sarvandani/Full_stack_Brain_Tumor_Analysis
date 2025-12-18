@@ -241,6 +241,43 @@
   margin-right: 10px;
 }
 
+/* Disclaimer Section */
+.disclaimer-section {
+  margin: 60px 0 40px;
+  padding: 30px;
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  border-radius: 15px;
+}
+
+.disclaimer-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.disclaimer-content h3 {
+  font-size: 1.5rem;
+  color: #856404;
+  margin-bottom: 15px;
+  font-weight: 700;
+}
+
+.disclaimer-content p {
+  font-size: 1rem;
+  color: #856404;
+  line-height: 1.8;
+  margin-bottom: 15px;
+}
+
+.disclaimer-content p:last-child {
+  margin-bottom: 0;
+}
+
+.disclaimer-content strong {
+  font-weight: 700;
+}
+
 @media (max-width: 768px) {
   .homepage-header h1 {
     font-size: 2rem;
