@@ -18,6 +18,10 @@ function ImageUploader({ onResult, onError, onReset }) {
     if (file) {
       if (!file.type.startsWith('image/')) {
         alert('Please select an image file')
+        // Reset input to allow selecting again
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ''
+        }
         return
       }
 
@@ -27,7 +31,18 @@ function ImageUploader({ onResult, onError, onReset }) {
       reader.onloadend = () => {
         setPreviewUrl(reader.result)
       }
+      reader.onerror = () => {
+        onError('Error reading image file')
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ''
+        }
+      }
       reader.readAsDataURL(file)
+    } else {
+      // No file selected, reset
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
     }
   }
 
@@ -79,14 +94,24 @@ function ImageUploader({ onResult, onError, onReset }) {
 
   const handleDrop = (e) => {
     e.preventDefault()
+    e.stopPropagation()
     const file = e.dataTransfer.files[0]
     if (file && file.type.startsWith('image/')) {
       setSelectedFile(file)
+      // Reset file input to allow selecting again
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
       const reader = new FileReader()
       reader.onloadend = () => {
         setPreviewUrl(reader.result)
       }
+      reader.onerror = () => {
+        onError('Error reading image file')
+      }
       reader.readAsDataURL(file)
+    } else {
+      onError('Please drop a valid image file')
     }
   }
 
@@ -94,7 +119,13 @@ function ImageUploader({ onResult, onError, onReset }) {
     <div className="uploader-container">
       <div 
         className={`upload-area ${previewUrl ? 'has-preview' : ''}`}
-        onClick={() => fileInputRef.current?.click()}
+        onClick={(e) => {
+          // Only trigger file input if clicking on placeholder, not preview
+          if (!previewUrl) {
+            e.stopPropagation()
+            fileInputRef.current?.click()
+          }
+        }}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -113,6 +144,10 @@ function ImageUploader({ onResult, onError, onReset }) {
               accept="image/*"
               className="file-input"
               onChange={handleFileSelect}
+              onClick={(e) => {
+                // Reset value to allow selecting same file again
+                e.target.value = ''
+              }}
             />
           </div>
         ) : (
