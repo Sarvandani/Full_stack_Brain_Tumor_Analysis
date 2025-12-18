@@ -14,6 +14,10 @@ export default defineConfig({
         {
           src: 'public/_headers',
           dest: ''
+        },
+        {
+          src: 'public/404.html',
+          dest: ''
         }
       ]
     })
