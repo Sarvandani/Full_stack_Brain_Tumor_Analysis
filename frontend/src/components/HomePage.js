@@ -1,8 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import './HomePage.css'
-import mriTumor from '../../public/images/mri_tumor.jpg'
-import mriNormal from '../../public/images/mri_normal.jpg'
 
 function HomePage() {
   const navigate = useNavigate()
@@ -22,7 +20,7 @@ function HomePage() {
         <section className="cta-section">
           <div className="cta-content">
             <div className="cta-image-left">
-              <img src={mriTumor} alt="MRI with Tumor" />
+              <img src="/images/mri_tumor.jpg" alt="MRI with Tumor" />
             </div>
             <div className="cta-text">
               <h2>Ready to Analyze?</h2>
@@ -32,7 +30,7 @@ function HomePage() {
               </button>
             </div>
             <div className="cta-image-right">
-              <img src={mriNormal} alt="Normal MRI" />
+              <img src="/images/mri_normal.jpg" alt="Normal MRI" />
             </div>
           </div>
         </section>
