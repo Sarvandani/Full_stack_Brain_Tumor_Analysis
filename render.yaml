@@ -11,17 +11,27 @@ services:
       - key: ALLOWED_ORIGINS
         value: https://brain-tumor-detection-frontend.onrender.com
     healthCheckPath: /health
-    plan: starter  # Change to 'standard' or 'pro' for production
-
-  # Frontend Service (if deploying separately)
-  - type: web
-    name: brain-tumor-detection-frontend
-    env: node
-    buildCommand: cd frontend && npm install && npm run build
-    startCommand: cd frontend && npm run preview
-    envVars:
-      - key: VITE_API_URL
-        value: https://brain-tumor-detection-api.onrender.com
-    staticPublishPath: ./frontend/dist
     plan: starter
+
+  # Frontend Service - Static Site (Single HTML File)
+  - type: static
+    name: brain-tumor-detection-frontend
+    buildCommand: echo "No build needed - using single HTML file"
+    staticPublishPath: ./frontend
+    headers:
+      - path: /*
+        name: Content-Type
+        value: text/html
+      - path: /*.js
+        name: Content-Type
+        value: application/javascript; charset=utf-8
+      - path: /*.css
+        name: Content-Type
+        value: text/css
+      - path: /*.jpg
+        name: Content-Type
+        value: image/jpeg
+      - path: /*.png
+        name: Content-Type
+        value: image/png
 
