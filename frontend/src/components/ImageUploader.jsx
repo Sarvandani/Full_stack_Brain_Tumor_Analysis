@@ -11,6 +11,7 @@ function ImageUploader({ onResult, onError, onReset }) {
   const [selectedFile, setSelectedFile] = useState(null)
   const [previewUrl, setPreviewUrl] = useState(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [modelLoading, setModelLoading] = useState(false)
   const fileInputRef = useRef(null)
 
   const handleFileSelect = (event) => {
@@ -40,13 +41,50 @@ function ImageUploader({ onResult, onError, onReset }) {
     onReset()
   }
 
-  const handlePredict = async () => {
-    if (!selectedFile) return
-
-    setIsAnalyzing(true)
+  const checkModelAndPredict = async () => {
     onError(null)
 
     try {
+      // Check model status first
+      const healthResponse = await fetch(`${API_URL}/health`)
+      const healthData = await healthResponse.json()
+
+      if (!healthData.model_loaded) {
+        // Model not loaded, show loading spinner and wait
+        setModelLoading(true)
+        
+        let retries = 0
+        const maxRetries = 15 // 30 seconds total (2 seconds * 15)
+        
+        while (retries < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, 2000)) // Wait 2 seconds
+          
+          const retryResponse = await fetch(`${API_URL}/health`)
+          const retryData = await retryResponse.json()
+          
+          if (retryData.model_loaded) {
+            break // Model is loaded, proceed
+          }
+          
+          retries++
+        }
+
+        // Final check
+        const finalResponse = await fetch(`${API_URL}/health`)
+        const finalData = await finalResponse.json()
+        
+        if (!finalData.model_loaded) {
+          setModelLoading(false)
+          throw new Error('Model is taking longer than expected to load. Please try again in a moment.')
+        }
+        
+        // Model is now loaded, hide loading spinner
+        setModelLoading(false)
+      }
+
+      // Model is loaded, proceed with prediction
+      setIsAnalyzing(true)
+
       const formData = new FormData()
       formData.append('file', selectedFile)
 
@@ -65,8 +103,14 @@ function ImageUploader({ onResult, onError, onReset }) {
     } catch (err) {
       onError(`Error: ${err instanceof Error ? err.message : 'An error occurred'}`)
     } finally {
+      setModelLoading(false)
       setIsAnalyzing(false)
     }
+  }
+
+  const handlePredict = async () => {
+    if (!selectedFile) return
+    await checkModelAndPredict()
   }
 
   const handleDragOver = (e) => {
@@ -91,7 +135,6 @@ function ImageUploader({ onResult, onError, onReset }) {
   }
 
   const handleExampleSelect = async (exampleType) => {
-    setIsAnalyzing(true)
     onError(null)
 
     try {
@@ -113,25 +156,11 @@ function ImageUploader({ onResult, onError, onReset }) {
       
       setSelectedFile(file)
 
-      // Automatically analyze
-      const formData = new FormData()
-      formData.append('file', file)
-
-      const predictResponse = await fetch(`${API_URL}/predict`, {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!predictResponse.ok) {
-        const errorData = await predictResponse.json()
-        throw new Error(errorData.detail || 'Failed to predict')
-      }
-
-      const data = await predictResponse.json()
-      onResult(data)
+      // Automatically analyze (this will check model and predict)
+      await checkModelAndPredict()
     } catch (err) {
       onError(`Error: ${err instanceof Error ? err.message : 'An error occurred'}`)
-    } finally {
+      setModelLoading(false)
       setIsAnalyzing(false)
     }
   }
@@ -175,18 +204,27 @@ function ImageUploader({ onResult, onError, onReset }) {
         onChange={handleFileSelect}
       />
 
+      {modelLoading && (
+        <div className="model-loading-container">
+          <div className="loading-spinner"></div>
+          <p className="loading-message">Loading AI model...</p>
+          <p className="loading-submessage">This may take a few moments on first use</p>
+        </div>
+      )}
+
       <div className="button-group">
         <button
           className="predict-button"
           onClick={handlePredict}
-          disabled={!selectedFile || isAnalyzing}
+          disabled={!selectedFile || isAnalyzing || modelLoading}
         >
-          {isAnalyzing ? 'Analyzing...' : 'Analyze Tumor'}
+          {modelLoading ? 'Loading model...' : isAnalyzing ? 'Analyzing...' : 'Analyze Tumor'}
         </button>
         {selectedFile && (
           <button
             className="reset-button"
             onClick={handleReset}
+            disabled={modelLoading || isAnalyzing}
           >
             Reset
           </button>
