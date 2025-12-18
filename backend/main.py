@@ -1,6 +1,7 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from contextlib import asynccontextmanager
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
@@ -9,7 +10,22 @@ import io
 import os
 import threading
 
-app = FastAPI(title="Brain Tumor Detection API")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan event handler for startup and shutdown"""
+    # Startup
+    try:
+        load_model()
+        print("✅ Model loaded successfully!")
+    except (FileNotFoundError, RuntimeError) as e:
+        print(f"⚠️  Warning: {e}")
+        print("⚠️  Model will be loaded on first prediction request")
+        print("⚠️  To train the model, POST to /train endpoint")
+        print("⚠️  Note: Old model is incompatible with TensorFlow 2.20.0 - retraining required")
+    yield
+    # Shutdown (if needed)
+
+app = FastAPI(title="Brain Tumor Detection API", lifespan=lifespan)
 
 # Enable CORS - Must be added before routes
 # Get allowed origins from environment or use defaults
@@ -82,18 +98,6 @@ def preprocess_image(image: Image.Image) -> np.ndarray:
     # Reshape for model input: (1, 128, 128, 3)
     img_array = img_array.reshape(1, 128, 128, 3)
     return img_array
-
-@app.on_event("startup")
-async def startup_event():
-    """Load model on startup"""
-    try:
-        load_model()
-        print("✅ Model loaded successfully!")
-    except (FileNotFoundError, RuntimeError) as e:
-        print(f"⚠️  Warning: {e}")
-        print("⚠️  Model will be loaded on first prediction request")
-        print("⚠️  To train the model, POST to /train endpoint")
-        print("⚠️  Note: Old model is incompatible with TensorFlow 2.20.0 - retraining required")
 
 @app.get("/")
 async def root():
