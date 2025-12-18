@@ -10,11 +10,15 @@ ENV/
 .venv
 *.pkl
 
-# Model files (uncomment if you want to exclude trained models from git)
-# *.keras
-# *.h5
-# *.pb
-# models/
+# Model files (excluded from git - too large, like NLP project)
+*.keras
+*.h5
+*.pb
+*.pth
+*.pt
+*.bin
+models/
+!models/.gitkeep
 
 # Node
 node_modules/
