@@ -112,17 +112,11 @@ def create_model():
         layers.Dense(units=1, activation="sigmoid"),
     ])
     
-    # Use learning rate scheduling
+    # Use initial learning rate (ReduceLROnPlateau will adjust it)
     initial_learning_rate = 0.001
-    lr_schedule = keras.optimizers.schedules.ExponentialDecay(
-        initial_learning_rate,
-        decay_steps=100,
-        decay_rate=0.96,
-        staircase=True
-    )
     
     model.compile(
-        optimizer=keras.optimizers.Adam(learning_rate=lr_schedule),
+        optimizer=keras.optimizers.Adam(learning_rate=initial_learning_rate),
         loss='binary_crossentropy',
         metrics=['accuracy', 'precision', 'recall']
     )
