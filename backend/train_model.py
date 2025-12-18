@@ -71,7 +71,7 @@ def load_data():
     return data, labels
 
 def create_model():
-    """Create an improved CNN model architecture with better accuracy (compatible with TF 2.20.0)"""
+    """Create an improved CNN model architecture with better accuracy (compatible with TF 2.15.0 and 2.20.0)"""
     model = keras.Sequential([
         # First Conv Block
         layers.Conv2D(filters=32, kernel_size=(3,3), activation="relu", padding='same', input_shape=(128, 128, 3)),
