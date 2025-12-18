@@ -15,19 +15,23 @@ export default defineConfig({
     }
   },
   build: {
+    // Ensure proper file extensions
     rollupOptions: {
       output: {
-        // Ensure proper file extensions for better MIME type detection
         entryFileNames: 'assets/[name]-[hash].js',
         chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]'
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name.split('.')
+          const ext = info[info.length - 1]
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
+            return `assets/images/[name]-[hash][extname]`
+          }
+          if (/woff2?|eot|ttf|otf/i.test(ext)) {
+            return `assets/fonts/[name]-[hash][extname]`
+          }
+          return `assets/[name]-[hash][extname]`
+        }
       }
-    }
-  },
-  // Ensure proper MIME types in production
-  server: {
-    headers: {
-      'Content-Type': 'application/javascript; charset=utf-8'
     }
   }
 })
