@@ -18,10 +18,16 @@ export default defineConfig({
     rollupOptions: {
       output: {
         // Ensure proper file extensions for better MIME type detection
-        entryFileNames: 'assets/[name].js',
-        chunkFileNames: 'assets/[name].js',
-        assetFileNames: 'assets/[name].[ext]'
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       }
+    }
+  },
+  // Ensure proper MIME types in production
+  server: {
+    headers: {
+      'Content-Type': 'application/javascript; charset=utf-8'
     }
   }
 })
