@@ -32,6 +32,9 @@
   text-align: center;
   padding: 40px;
   color: #666;
+  pointer-events: none;
+  position: relative;
+  z-index: 1;
 }
 
 .file-input {
