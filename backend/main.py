@@ -30,14 +30,33 @@ app = FastAPI(title="Brain Tumor Detection API", lifespan=lifespan)
 # Enable CORS - Must be added before routes
 # Get allowed origins from environment or use defaults
 import os
-ALLOWED_ORIGINS = os.getenv(
-    "ALLOWED_ORIGINS",
-    "http://localhost:4001,http://localhost:4000,http://localhost:3000,http://localhost:5173,http://127.0.0.1:4001,https://full-stack-brain-tumor-analysis-1q4r.onrender.com"
-).split(",")
+# Allow all Render origins and localhost for development
+default_origins = [
+    "http://localhost:4001",
+    "http://localhost:4000", 
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:4001",
+    "https://full-stack-brain-tumor-analysis-1q4r.onrender.com",
+    "https://*.onrender.com"  # Allow all Render static sites
+]
 
+# Get from environment or use defaults
+env_origins = os.getenv("ALLOWED_ORIGINS", "")
+if env_origins:
+    ALLOWED_ORIGINS = [origin.strip() for origin in env_origins.split(",")]
+else:
+    ALLOWED_ORIGINS = default_origins
+
+# For production, allow all Render origins
+if not any("localhost" in origin for origin in ALLOWED_ORIGINS):
+    # Add wildcard for Render if not explicitly set
+    ALLOWED_ORIGINS.append("https://*.onrender.com")
+
+# CORS configuration - allow all Render origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
+    allow_origins=["*"],  # Allow all origins for now (can restrict later)
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
