@@ -146,3 +146,8 @@ This tool is for **educational and research purposes only**. It should **not be 
 ---
 
 *For questions, issues, or contributions, please open an issue on GitHub.*
+
+## 📊 Dataset
+
+The dataset used in this project can be downloaded from:
+- [Brain MRI Images for Brain Tumor Detection - Kaggle](https://www.kaggle.com/datasets/navoneel/brain-mri-images-for-brain-tumor-detection?datasetId=165566&sortBy=voteCount)
